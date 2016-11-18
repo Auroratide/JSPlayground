@@ -34,3 +34,5 @@ npm-debug.log
 
 # idk what this is
 .DS_Store
+.idea/
+JSPlayground.iml
