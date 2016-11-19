@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src='/javascripts/bundle.js'></script>
+</head>
+<body>
+<div class="exercises">
+    <h3>Exercises</h3>
+    <% for (var i = 0; i < exercises.length; i++) { %>
+    <a href='<%= exercises[i] %>'><%= exercises[i] %></a>
+    <% } %>
+</div>
+
+<div class="gravatar">
+    <button>Show Gravatar</button>
+</div>
+
+<script id="dialog-template" type="template/text">
+    <h1 class="title">Please, provide your email</h1>
+    Email: <input class="email" type="email" >
+    <button class="submit">Submit</button>
+    <button class="cancel">Cancel</button>
+</script>
+
+</body>
+</html>
