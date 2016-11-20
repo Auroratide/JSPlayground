@@ -1,5 +1,4 @@
 import $ from 'jquery';
-
 import md5 from 'md5';
 
 var emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -7,16 +6,16 @@ var emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@
 class Promises {
 
     constructor(options) {
-
-        this.ui = {};
-
-        this.ui.element = options.element;
-        this.ui.input = this.ui.element.find('input');
-        this.ui.button = this.ui.element.find('button');
-
-        this.inputTemplate = options.dialogTemplate;
-
+        this.options = options;
+        this.buildInterface();
         this.init();
+    }
+
+    buildInterface() {
+      this.ui = {};
+
+      this.ui.element = this.options.element;
+      this.ui.button = this.ui.element.find('button');
     }
 
     init() {
@@ -29,7 +28,8 @@ class Promises {
                 .then(this.extractGravatarEntry)
                 .then(this.showGravatar)
                 .fail((cause) => {
-                    alert(cause.message);
+                  const message = cause.message || cause;
+                  alert(message);
                 });
         });
     }
@@ -37,28 +37,30 @@ class Promises {
     getInput() {
         const input = $.Deferred();
 
-        const $dialog = $(this.inputTemplate);
+        const $dialog = $(this.options.dialogTemplate);
 
         const $body = $('body');
 
         $body.append($dialog);
 
-        $body.one('click', 'button.submit', (event) => {
-            event.preventDefault();
-            input.resolve($('.email').val());
-            $dialog.remove();
+        $(() => {
+          $dialog.one('click', 'button.submit', (event) => {
+              event.preventDefault();
+              input.resolve($('.email').val());
+              $dialog.remove();
+          });
+
+          $dialog.one('click', 'button.cancel', (event) => {
+              event.preventDefault();
+              input.reject(new Error('User canceled'));
+              $dialog.remove();
+          });
+
         });
-
-        $body.one('click', 'button.cancel', (event) => {
-            event.preventDefault();
-            input.reject(new Error('User canceled'));
-            $dialog.remove();
-        });
-
-
 
         return input.promise();
     }
+
     validateInput(input) {
         if(!emailRegex.test(input)) {
             throw new Error(`${input} is not a valid email`);
@@ -89,7 +91,14 @@ class Promises {
     }
 
     showGravatar(gravatarProfile) {
-        const $image = $('<img>').attr('src', gravatarProfile.thumbnailUrl).attr('alt', gravatarProfile.preferredUsername);
+      const $image = $(
+          `<div class=gravatar>
+            <img src="${gravatarProfile.thumbnailUrl}">
+            <p>
+              ${gravatarProfile.preferredUsername}
+            </p>
+          </div>
+        `);
 
         $('body').append($image);
     }
