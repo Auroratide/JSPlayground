@@ -25,7 +25,7 @@ class Promises {
             this.getInput()
                 .then(this.validateInput)
                 .then(this.generateGravatarProfileUrl)
-                .then(this.requestGravatar)
+                .then(this.requestGravatarData)
                 .then(this.extractGravatarEntry)
                 .then(this.showGravatar)
                 .catch(this.alertWithError);
@@ -71,7 +71,7 @@ class Promises {
         return 'http://www.gravatar.com/' + md5(email) + '.json';
     }
 
-    requestGravatar(gravatarUrl) {
+    requestGravatarData(gravatarUrl) {
         return $.ajax({
             url: gravatarUrl,
             jsonp: "callback",
