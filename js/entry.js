@@ -8,8 +8,8 @@ $(document).ready(() => {
   EmailValidator.setup();
 
   new Promises({
-    element: $('.gravatar'),
-    dialogTemplate: $('#dialog-template').text()
+    element: '.gravatar-show',
+    dialogTemplate: '#dialog-template'
   });
 
 });

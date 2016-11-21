@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import md5 from 'md5';
 
-var emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 class Promises {
 
@@ -12,9 +12,10 @@ class Promises {
     }
 
     buildInterface() {
-      this.ui = {};
+      this.dialogTemplate = $(this.options.dialogTemplate).text();
 
-      this.ui.element = this.options.element;
+      this.ui = {};
+      this.ui.element = $(this.options.element);
       this.ui.button = this.ui.element.find('button');
     }
 
@@ -27,17 +28,14 @@ class Promises {
                 .then(this.requestGravatar)
                 .then(this.extractGravatarEntry)
                 .then(this.showGravatar)
-                .fail((cause) => {
-                  const message = cause.message || cause;
-                  alert(message);
-                });
+                .fail(this.alertWithError);
         });
     }
 
     getInput() {
         const input = $.Deferred();
 
-        const $dialog = $(this.options.dialogTemplate);
+        const $dialog = $(this.dialogTemplate);
 
         const $body = $('body');
 
@@ -101,6 +99,25 @@ class Promises {
         `);
 
         $('body').append($image);
+    }
+
+    alertWithError(cause) {
+      if(cause instanceof Error) {
+        alert(cause.message);
+        return;
+      }
+
+      if(typeof cause === 'string') {
+        alert(cause);
+        return;
+      }
+
+      if(typeof cause === 'object' && cause.statusText) {
+        alert(cause.statusText);
+        return;
+      }
+
+      alert(JSON.stringify(cause));
     }
 }
 
