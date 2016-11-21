@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import md5 from 'md5';
 
-const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 class Promises {
 
@@ -28,7 +28,7 @@ class Promises {
                 .then(this.requestGravatar)
                 .then(this.extractGravatarEntry)
                 .then(this.showGravatar)
-                .fail(this.alertWithError);
+                .catch(this.alertWithError);
         });
     }
 
@@ -50,7 +50,7 @@ class Promises {
 
           $dialog.one('click', 'button.cancel', (event) => {
               event.preventDefault();
-              input.reject(new Error('User canceled'));
+              input.reject(new Error('User canceled operation.'));
               $dialog.remove();
           });
 
@@ -60,7 +60,7 @@ class Promises {
     }
 
     validateInput(input) {
-        if(!emailRegex.test(input)) {
+        if(!EMAIL_REGEX.test(input)) {
             throw new Error(`${input} is not a valid email`);
         }
 
