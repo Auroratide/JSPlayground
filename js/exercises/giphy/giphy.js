@@ -1,6 +1,11 @@
 import $ from 'jquery';
 
 
+function identity(argument) {
+    return argument;
+}
+
+
 class Giphy {
 
     constructor(options) {
@@ -23,47 +28,49 @@ class Giphy {
         this.ui.send.on('click', function(event) {
             event.preventDefault();
 
+            let searchCall = self.executeSearchAjax(self.ui.searchInput.val());
+            let randomCall = self.executeRandomAjax();
+            let trendingCall = self.executeTrendAjax();
 
-
-            $.ajax({
-               url: 'http://api.giphy.com/v1/gifs/search',
-                data: {
-                   q: self.ui.searchInput.val(),
-                    limit: 1,
-                    api_key: 'dc6zaTOxFJmzC'
-                },
-
-                success: function(data) {
-
-                    self.ui.search.attr('src', data.data[0].images.original.url );
-
-                    $.ajax({
-                        url: 'http://api.giphy.com/v1/gifs/random',
-                        data: {
-                            api_key: 'dc6zaTOxFJmzC',
-                            limit: 1
-                        },
-                        success: function(data) {
-
-                            self.ui.random.attr('src', data.data['image_url']);
-
-                            $.ajax({
-                                url: 'http://api.giphy.com/v1/gifs/trending',
-                                data: {
-                                    limit: 1,
-                                    api_key: 'dc6zaTOxFJmzC',
-                                },
-                                success: function(data) {
-                                    self.ui.anything.attr('src', data.data[0].images.original.url);
-                                }
-                            });
-                        }
-                    });
-
-                }
-            });
+            $.when(searchCall, randomCall, trendingCall)
+                .then((searchData, randomData, trendingData) => {
+                    self.ui.search.attr('src', searchData.data[0].images.original.url );
+                    self.ui.random.attr('src', randomData.data['image_url']);
+                    self.ui.anything.attr('src', trendingData.data[0].images.original.url);
+                });
 
         });
+    }
+
+    executeTrendAjax() {
+        return $.ajax({
+            url: 'http://api.giphy.com/v1/gifs/trending',
+            data: {
+                limit: 1,
+                api_key: 'dc6zaTOxFJmzC',
+            }
+        }).then(identity);
+    }
+
+    executeRandomAjax() {
+        return $.ajax({
+            url: 'http://api.giphy.com/v1/gifs/random',
+            data: {
+                api_key: 'dc6zaTOxFJmzC',
+                limit: 1
+            }
+        }).then(identity );
+    }
+
+    executeSearchAjax(searchInput) {
+        return $.ajax({
+            url: 'http://api.giphy.com/v1/gifs/search',
+            data: {
+                q: searchInput,
+                limit: 1,
+                api_key: 'dc6zaTOxFJmzC'
+            }
+        }).then(identity);
     }
 
 
