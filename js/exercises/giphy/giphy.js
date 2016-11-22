@@ -32,6 +32,9 @@ class Giphy {
             let randomCall = self.executeRandomAjax();
             let trendingCall = self.executeTrendAjax();
 
+            /**
+             * See https://api.jquery.com/jquery.when/
+             */
             $.when(searchCall, randomCall, trendingCall)
                 .then((searchData, randomData, trendingData) => {
                     self.ui.search.attr('src', searchData.data[0].images.original.url );
