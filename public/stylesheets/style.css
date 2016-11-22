@@ -23,3 +23,9 @@ a {
     justify-content:center;
     align-items:center;
 }
+
+.giphy {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
